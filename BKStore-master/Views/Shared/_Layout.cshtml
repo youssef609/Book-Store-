@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="~/css/site.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BKStore_MVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site1.css" asp-append-version="true" />
+@*     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+ *@    <style>
+        .sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100%;
+            left: -250px; /* Hide sidebar by default */
+            transition: left 0.3s;
+            z-index:1;
+        }
+
+            .sidebar a {
+                display: block;
+                color: #333;
+                padding: 10px;
+                text-decoration: none;
+            }
+
+                .sidebar a:hover {
+                    background-color: #ddd;
+                }
+
+        .main-content {
+            margin-left: 20px; /* Adjust based on sidebar width */
+            padding: 20px;
+        }
+
+        .open-sidebar {
+            left: 0; /* Show sidebar */
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+            .auth-buttons a {
+                margin-left: 10px;
+                text-decoration: none;
+                color: #333;
+            }
+
+                .auth-buttons a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+<body>
+
+
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white bg-opacity-75 border-bottom box-shadow mb-3 rounded ">
+            <div class="container-fluid">
+
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <a class="navbar-brand" asp-area="" asp-controller="Book" asp-action="Index">
+                    <img src="/assets/img/logosvg.svg" style="width:60px">
+                </a>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Book" asp-action="Index">Books</a>
+                        </li>
+
+
+                        @if (User.IsInRole("Delivery"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="GetAll">Orders</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="#" onclick="toggleSidebar()">Settings</a>
+                            </li>
+                        }
+                        @if (User?.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="SignOut">Sign Out</a>
+                            </li>
+                        }
+
+                    </ul>
+
+
+
+                    <form id="searchForm" asp-action="SearchByName" asp-controller="Book" method="get" class="form-inline">
+                        <input id="searchInput" type="text" name="name" class="form-control me-2" placeholder="Search for books" autocomplete="off" value="@ViewBag.SearchTerm" />
+                    </form>
+
+
+
+
+                    <div class="auth-buttons">
+                        <a href="/Book/ShowWishlist" class="wishlist-icon">
+                            <img src="/assets/img/icons/heart.svg" style="width:35px;height:35px" />
+                        </a>
+
+                        <a href="/Book/ShowCart" class="icon">
+                            <img src="/assets/img/icons/basket.svg" style="width:35px;height:35px" />
+
+                        </a>
+                        @if (User.Identity.IsAuthenticated == false)
+                        {
+                            <a href="@Url.Action("Login", "Account")">Login</a>
+                            <a href="@Url.Action("Register", "Account")">Register</a>
+                        }
+                        <a href="/User/MyAccount/">
+                            <img src="/assets/img/icons/profile.svg" style="width:35px;height:35px" />
+
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!--                New nav bar                     -->
+
+    <div class="sidebar" id="sidebar">
+        <h2>Settings</h2>
+        @if (User?.IsInRole("Admin") == true)
+        {
+            <a href="/Book/GetAllToAdmin/">Manage Books</a>
+            <a href="/Customer/GetAll/">Customers</a>
+            <a href="/Delivery/GetAll/">Deliveries</a>
+            <a href="/User/GetAll">Users</a>
+            <a href="/Account/AddAdmin">Add a Delivery</a>
+            <a href="/Category/Index">Manage Categories</a>
+
+        }
+        <a href="/Order/GetAll">Orders</a>
+    </div>
+    <div class="main-content">
+
+
+
+
+        @RenderBody()
+
+
+
+
+
+    </div>
+
+
+
+    <div class="container">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+                <a asp-area="" asp-controller="Book" asp-action="Index" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                    <img src="/assets/img/logosvg.svg" style="width:60px">
+                </a>
+                <span class="mb-3 mb-md-0 text-muted">© 2024 Book Store</span>
+            </div>
+
+            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-3">
+                    <a class="text-muted" href="#">
+                        <svg class="bi" width="24" height="24">
+                            <image href="/assets/img/icons/facebook.svg" width="24" height="24" />
+                        </svg>
+                    </a>
+                </li>
+                <li class="ms-3">
+                    <a class="text-muted" href="#">
+                        <img class="bi" width="24" height="24" src="/assets/img/icons/instagram.svg" alt="logo">
+                    </a>
+                </li>
+                <li class="ms-3">
+                    <a class="text-muted" href="#">
+                        <img class="bi" width="24" height="24" src="/assets/img/icons/twitter.svg" alt="logo">
+                    </a>
+                </li>
+
+            </ul>
+        </footer>
+    </div>
+    
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Variable to store the last scroll position
+        let lastScrollTop = 0;
+        const sidebar = document.getElementById("sidebar");
+
+        // Function to hide or show the sidebar on scroll
+        window.addEventListener("scroll", function () {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Close the sidebar if the user is scrolling down
+            if (scrollTop > lastScrollTop) {
+                sidebar.classList.remove("open-sidebar");
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For mobile or negative scrolling
+        });
+
+        function toggleSidebar() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("open-sidebar");
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

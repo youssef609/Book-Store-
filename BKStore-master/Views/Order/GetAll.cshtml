@@ -1,0 +1,68 @@
+﻿@model IEnumerable<BKStore_MVC.Models.Order>
+
+@{
+    ViewData["Title"] = "All Orders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center my-4">All Orders</h1>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.OrderId)</th>
+                    <th>@Html.DisplayNameFor(model => model.OrderDate)</th>
+                    <th>@Html.DisplayNameFor(model => model.TotalAmount)</th>
+                    <th>@Html.DisplayNameFor(model => model.CustomerID)</th>
+                    <th>Delivery Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.OrderId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.OrderDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TotalAmount)</td>
+                        <td>@Html.DisplayFor(modelItem => item.CustomerID)</td>
+                        <td>
+                            @{
+                                var statusClass = item.DelivaryStatus == "Pending" ? "text-warning" : "text-success";
+                            }
+                            <span class="@statusClass">@Html.DisplayFor(modelItem => item.DelivaryStatus)</span>
+                        </td>
+                        <td>
+                            @Html.ActionLink("Details", "DetailedOrder", "Order", new { OrderId = item.OrderId }, new { @class = "btn btn-primary btn-sm" })
+
+                            @if (User.IsInRole("Delivery") && item.DelivaryStatus == "Delivering")
+                            {
+                                <button onclick="updateOrderStatus(@item.OrderId)" class="btn btn-success btn-sm">Mark as Delivered</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function updateOrderStatus(orderId) {
+        fetch(`/Order/UpdateStatus?orderID=${orderId}`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order status updated successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to update order status.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>

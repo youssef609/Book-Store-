@@ -1,0 +1,74 @@
+﻿@model List<Category>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+
+    .btn-success{
+        color: white;
+        background-color: black;
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        display: inline-block;
+        padding: 0.5375em .97em;
+        border-radius: 15px;
+        transition: 0.7s ease;
+        margin:8px;
+
+
+
+    }
+
+    .btn-success:hover {
+        color: lightblue;
+        background-color: rgb(22, 22, 22);
+        transform: scale(1.1);
+    }
+
+</style>
+<h1>Categories</h1>
+
+<a href="/Category/New" class="btn-success"> New </a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+          <th> ID </th>
+          <th> Name </th>
+            <th> Description </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+
+                <td>
+                    <a class="btn btn-primary" asp-controller="Category" asp-action="Details" asp-route-id="@item.CategoryID"> Details </a>
+                </td>
+
+                <td>
+                    <a class="btn btn-warning" asp-controller="Category" asp-action="Edit" asp-route-id="@item.CategoryID"> Edit </a>
+                </td>
+
+
+                <td>
+                    <a class="btn btn-danger" asp-controller="Category" asp-action="Delete" asp-route-id="@item.CategoryID"> Delete </a>
+                </td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>

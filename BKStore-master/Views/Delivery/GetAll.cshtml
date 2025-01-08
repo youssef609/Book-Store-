@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BKStore_MVC.ViewModel.DeliveryVM>
+
+@{
+    ViewData["Title"] = "Get All Delivery Clients";
+}
+
+<h1 class="text-center my-4">Get All Delivery Clients</h1>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>National ID</th>
+                    <th>User Name</th>
+                    <th>Is Locked</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.UserID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.NationalID)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                        <td>
+                            @if (!item.IsLocked)
+                            {
+                                <span class="text-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger">Locked</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!item.IsLocked)
+                            {
+                                <form asp-action="LockAccount" method="post" class="d-inline">
+                                    <input type="hidden" name="ID" value="@item.UserID" />
+                                    <button type="submit" class="btn btn-warning btn-sm">Lock User</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="UnLockAccount" method="post" class="d-inline">
+                                    <input type="hidden" name="ID" value="@item.UserID" />
+                                    <button type="submit" class="btn btn-success btn-sm">UnLock User</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
